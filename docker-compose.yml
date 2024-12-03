@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: my_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - custom_network
+
+  admin:
+    image: dpage/pgadmin4:7.8
+    container_name: admin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@postgres.com  # Admin email for pgAdmin login
+      PGADMIN_DEFAULT_PASSWORD: admin_password # Admin password for pgAdmin login
+    ports:
+      - "8080:80" # Map pgAdmin's web interface to port 8080 on your host
+    depends_on:
+      - db
+    networks:
+      - custom_network
+
+volumes:
+  pgdata:
+
+networks:
+  custom_network:
+    driver: bridge

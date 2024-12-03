@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: express
+  #  flyway:
+  #    enabled: true
+  #    locations: classpath:db/migration
+  #    baseline-on-migrate: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/my_database
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: password
+
+express:
+  name: user
+  password: hello
+  roles: USER
+
+server:
+  port: 9090
