@@ -25,7 +25,7 @@ public class CustomerEntity {
     private String address;
     @Column(nullable = true)
     private String recommendedBy;
-    @CreatedDate()
+    @CreatedDate
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;

@@ -12,10 +12,10 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "customers_id")
-    private CustomerEntity custId;
+    @JoinColumn(name = "customer_id")
+    private CustomerEntity customerId;
 
     @ManyToOne
-    @JoinColumn(name = "products_id")
+    @JoinColumn(name = "product_id")
     private ProductEntity productId;
 }

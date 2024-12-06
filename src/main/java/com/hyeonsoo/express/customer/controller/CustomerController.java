@@ -15,12 +15,8 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<Iterable<CustomerEntity>> getAll(@RequestParam(required = false) String name) {
-        if (name == null) {
-            return ResponseEntity.ok(customerService.getAll());
-        }
-
-        return ResponseEntity.ok(customerService.getAllByName(name));
+    public ResponseEntity<Iterable<CustomerEntity>> getAll() {
+        return ResponseEntity.ok(customerService.getAll());
     }
 
     @PostMapping

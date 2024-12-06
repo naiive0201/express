@@ -22,12 +22,11 @@ public class SecurityConfig {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll() // Allow authentication endpoints
+                        .requestMatchers("/api/auth/login").permitAll() // Allow authentication endpoints
                         .anyRequest().authenticated() // Protect other endpoints
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter

@@ -3,14 +3,11 @@ package com.hyeonsoo.express.customer.service;
 import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.CustomerEntity;
 import com.hyeonsoo.express.customer.repo.CustomerRepository;
-import lombok.RequiredArgsConstructor;
+import com.hyeonsoo.express.util.EmptyCheckerUtil;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class CustomerService {
-    private final CustomerRepository customerRepository;
-
+public record CustomerService(CustomerRepository customerRepository) {
     public Iterable<CustomerEntity> getAll() {
         return customerRepository.findAll();
     }
@@ -19,54 +16,56 @@ public class CustomerService {
         return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
     }
 
-    public Iterable<CustomerEntity> getAllByName(String name) {
-        return customerRepository.findAllByName(name);
+    public CustomerEntity getByName(String name) {
+        return customerRepository.findByName(name);
+    }
+
+    public CustomerEntity getByNameAndPhone(CustomerDto customerDto) {
+        return customerRepository.findByNameAndPhone(customerDto.getName(), customerDto.getPhone());
     }
 
     public CustomerEntity createCustomer(CustomerDto customerDto) {
-        if (customerAlreadyExist(customerDto)) {
+        CustomerEntity customerExists = getByNameAndPhone(customerDto);
+        if (EmptyCheckerUtil.exists(customerExists)) {
             throw new RuntimeException("A customer to be inserted already exist");
         }
 
-        CustomerEntity newCustomer = new CustomerEntity();
-        newCustomer.setName(customerDto.getName());
-        newCustomer.setAddress(customerDto.getAddress());
-        newCustomer.setPhone(customerDto.getPhone());
-        newCustomer.setRecommendedBy(customerDto.getRecommendedBy());
+        CustomerEntity tobeInserted = new CustomerEntity();
+        tobeInserted.setName(customerDto.getName());
+        tobeInserted.setAddress(customerDto.getAddress());
+        tobeInserted.setPhone(customerDto.getPhone());
+        tobeInserted.setRecommendedBy(customerDto.getRecommendedBy());
 
-        return customerRepository.save(newCustomer);
-    }
-
-    private boolean customerAlreadyExist(CustomerDto customerDto) {
-        CustomerEntity exists = customerRepository.findByNameAndPhone(customerDto.getName(), customerDto.getPhone());
-        return (exists != null);
+        return customerRepository.save(tobeInserted);
     }
 
     public CustomerEntity updateCustomer(CustomerDto customerDto) {
-        if (!customerAlreadyExist(customerDto)) {
+        CustomerEntity customerExists = getByNameAndPhone(customerDto);
+        if (EmptyCheckerUtil.notExists(customerExists)) {
             throw new RuntimeException("A customer to be updated does not exist");
         }
 
-        CustomerEntity updatedCustomer = new CustomerEntity();
-        updatedCustomer.setName(customerDto.getName());
-        updatedCustomer.setAddress(customerDto.getAddress());
-        updatedCustomer.setPhone(customerDto.getPhone());
-        updatedCustomer.setRecommendedBy(customerDto.getRecommendedBy());
+        CustomerEntity tobeUpdated = new CustomerEntity();
+        tobeUpdated.setName(customerDto.getName());
+        tobeUpdated.setAddress(customerDto.getAddress());
+        tobeUpdated.setPhone(customerDto.getPhone());
+        tobeUpdated.setRecommendedBy(customerDto.getRecommendedBy());
 
-        return customerRepository.save(updatedCustomer);
+        return customerRepository.save(tobeUpdated);
     }
 
     public void deleteCustomer(CustomerDto customerDto) {
-        if (!customerAlreadyExist(customerDto)) {
+        CustomerEntity customerExists = getByNameAndPhone(customerDto);
+        if (EmptyCheckerUtil.notExists(customerExists)) {
             throw new RuntimeException("A customer to be deleted does not exist");
         }
 
-        CustomerEntity deletedCustomer = new CustomerEntity();
-        deletedCustomer.setName(customerDto.getName());
-        deletedCustomer.setAddress(customerDto.getAddress());
-        deletedCustomer.setPhone(customerDto.getPhone());
-        deletedCustomer.setRecommendedBy(customerDto.getRecommendedBy());
+        CustomerEntity tobeDeleted = new CustomerEntity();
+        tobeDeleted.setName(customerDto.getName());
+        tobeDeleted.setAddress(customerDto.getAddress());
+        tobeDeleted.setPhone(customerDto.getPhone());
+        tobeDeleted.setRecommendedBy(customerDto.getRecommendedBy());
 
-        customerRepository.delete(deletedCustomer);
+        customerRepository.delete(tobeDeleted);
     }
 }
