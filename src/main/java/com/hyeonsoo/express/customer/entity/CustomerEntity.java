@@ -1,7 +1,9 @@
 package com.hyeonsoo.express.customer.entity;
 
+import com.hyeonsoo.express.customer.dto.CustomerDto;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "customers")
 @Data
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class CustomerEntity {
 
     @Id
@@ -29,5 +32,15 @@ public class CustomerEntity {
     private LocalDateTime createdAt;
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    public CustomerEntity(CustomerDto customerDto) {
+        this.id = customerDto.getId();
+        this.name = customerDto.getName();
+        this.phone = customerDto.getPhone();
+        this.address = customerDto.getAddress();
+        this.recommendedBy = customerDto.getRecommendedBy();
+        this.createdAt = customerDto.getCreatedAt();
+        this.updatedAt = customerDto.getUpdatedAt();
+    }
 
 }

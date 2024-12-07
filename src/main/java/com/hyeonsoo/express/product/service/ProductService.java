@@ -37,11 +37,7 @@ public class ProductService {
     }
 
     public ProductEntity updateProduct(ProductDto productDto) {
-        ProductEntity existsProduct = getByName(productDto.getName());
-
-        if (EmptyCheckerUtil.notExists(existsProduct)) {
-            throw new RuntimeException("Product not Exist");
-        }
+        checkIfExists(productDto);
 
         ProductEntity tobeUpdated = new ProductEntity();
         tobeUpdated.setName(productDto.getName());
@@ -52,11 +48,7 @@ public class ProductService {
     }
 
     public void deleteProduct(ProductDto productDto) {
-        ProductEntity existsProduct = getByName(productDto.getName());
-
-        if (EmptyCheckerUtil.notExists(existsProduct)) {
-            throw new RuntimeException("Product not Exist");
-        }
+        checkIfExists(productDto);
 
         ProductEntity tobeDeleted = new ProductEntity();
         tobeDeleted.setName(productDto.getName());
@@ -64,6 +56,14 @@ public class ProductService {
         tobeDeleted.setDescription(productDto.getDescription());
 
         productRepository.delete(tobeDeleted);
+    }
+
+    private void checkIfExists(ProductDto productDto) {
+        ProductEntity existsProduct = getByName(productDto.getName());
+
+        if (EmptyCheckerUtil.notExists(existsProduct)) {
+            throw new RuntimeException("Product not Exist");
+        }
     }
 
 }

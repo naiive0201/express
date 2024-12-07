@@ -40,10 +40,7 @@ public record CustomerService(CustomerRepository customerRepository) {
     }
 
     public CustomerEntity updateCustomer(CustomerDto customerDto) {
-        CustomerEntity customerExists = getByNameAndPhone(customerDto);
-        if (EmptyCheckerUtil.notExists(customerExists)) {
-            throw new RuntimeException("A customer to be updated does not exist");
-        }
+        checkIfExists(customerDto);
 
         CustomerEntity tobeUpdated = new CustomerEntity();
         tobeUpdated.setName(customerDto.getName());
@@ -55,10 +52,7 @@ public record CustomerService(CustomerRepository customerRepository) {
     }
 
     public void deleteCustomer(CustomerDto customerDto) {
-        CustomerEntity customerExists = getByNameAndPhone(customerDto);
-        if (EmptyCheckerUtil.notExists(customerExists)) {
-            throw new RuntimeException("A customer to be deleted does not exist");
-        }
+        checkIfExists(customerDto);
 
         CustomerEntity tobeDeleted = new CustomerEntity();
         tobeDeleted.setName(customerDto.getName());
@@ -67,5 +61,12 @@ public record CustomerService(CustomerRepository customerRepository) {
         tobeDeleted.setRecommendedBy(customerDto.getRecommendedBy());
 
         customerRepository.delete(tobeDeleted);
+    }
+
+    private void checkIfExists(CustomerDto customerDto) {
+        CustomerEntity customerExists = getByNameAndPhone(customerDto);
+        if (EmptyCheckerUtil.notExists(customerExists)) {
+            throw new RuntimeException("A customer to be deleted does not exist");
+        }
     }
 }
