@@ -8,6 +8,8 @@ import com.hyeonsoo.express.product.entity.ProductEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -21,5 +23,9 @@ public class OrderService {
         return orderRepository.save(newOrder);
     }
 
+    public Iterable<OrderEntity> getOrdersByCustomerId(Long customerId){
+
+        return orderRepository.findAllByCustomerId(customerId);
+    }
 
 }
