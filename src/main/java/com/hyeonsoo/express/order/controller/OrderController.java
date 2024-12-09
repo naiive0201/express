@@ -22,8 +22,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderEntity> insertOrder(@RequestBody OrderDto orderDto) {
+    public ResponseEntity<Long> insertOrder(@RequestBody OrderDto orderDto) {
         OrderEntity newOrder = orderService.createOrder(orderDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newOrder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newOrder.getId());
     }
 }
