@@ -1,10 +1,6 @@
 spring:
   application:
     name: express
-  #  flyway:
-  #    enabled: true
-  #    locations: classpath:db/migration
-  #    baseline-on-migrate: true
   datasource:
     url: jdbc:postgresql://localhost:5432/my_database
     driver-class-name: org.postgresql.Driver
@@ -13,12 +9,10 @@ spring:
   jpa:
     show-sql: true
     generate-ddl: true
-
-
-express:
-  name: user
-  password: hello
-  roles: USER
-
 server:
   port: 9090
+
+express:
+  client:
+    domain: http://localhost
+    port: 3000
