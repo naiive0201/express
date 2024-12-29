@@ -15,8 +15,16 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<Iterable<CustomerEntity>> getAll() {
-        return ResponseEntity.ok(customerService.getAll());
+    public ResponseEntity<Iterable<CustomerEntity>> getCustomers(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size,
+        @RequestParam(required = false) String name
+    ) {
+        if (name == null) {
+            return ResponseEntity.ok(customerService.getCustomers(page, size));
+        }
+
+        return ResponseEntity.ok(customerService.getCustomersByName(name, page, size));
     }
 
     @PostMapping
@@ -34,5 +42,4 @@ public class CustomerController {
         customerService.deleteCustomer(customerDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 }

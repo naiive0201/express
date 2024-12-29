@@ -15,6 +15,11 @@ import java.util.List;
 public class OrderService {
     private final OrderRepository orderRepository;
 
+    public Iterable<OrderEntity> getOrdersByCustomerId(Long customerId){
+
+        return orderRepository.findAllByCustomerId(customerId);
+    }
+
     public OrderEntity createOrder(OrderDto orderDto) {
         OrderEntity newOrder = new OrderEntity();
         newOrder.setCustomer(new CustomerEntity(orderDto.getCustomer()));
@@ -23,9 +28,11 @@ public class OrderService {
         return orderRepository.save(newOrder);
     }
 
-    public Iterable<OrderEntity> getOrdersByCustomerId(Long customerId){
 
-        return orderRepository.findAllByCustomerId(customerId);
+    public void deleteOrder(OrderDto orderDto) {
+        OrderEntity deletedOrder = new OrderEntity();
+        deletedOrder.setId(orderDto.getId());
+
+        orderRepository.delete(deletedOrder);
     }
-
 }

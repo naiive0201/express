@@ -26,4 +26,12 @@ public class OrderController {
         OrderEntity newOrder = orderService.createOrder(orderDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newOrder.getId());
     }
+    
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteOrder(@RequestBody OrderDto orderDto) {
+        orderService.deleteOrder(orderDto);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

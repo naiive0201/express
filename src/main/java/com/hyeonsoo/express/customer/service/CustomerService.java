@@ -4,20 +4,26 @@ import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.CustomerEntity;
 import com.hyeonsoo.express.customer.repo.CustomerRepository;
 import com.hyeonsoo.express.util.EmptyCheckerUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 public record CustomerService(CustomerRepository customerRepository) {
-    public Iterable<CustomerEntity> getAll() {
-        return customerRepository.findAll();
+
+    public Page<CustomerEntity> getCustomersByName(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return customerRepository.findByName(name, pageable);
+    }
+
+    public Page<CustomerEntity> getCustomers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return customerRepository.findAll(pageable);
     }
 
     public CustomerEntity getById(Long id) {
         return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("User Not Found"));
-    }
-
-    public CustomerEntity getByName(String name) {
-        return customerRepository.findByName(name);
     }
 
     public CustomerEntity getByNameAndPhone(CustomerDto customerDto) {
