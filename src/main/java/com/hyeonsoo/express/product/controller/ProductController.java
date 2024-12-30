@@ -2,7 +2,7 @@ package com.hyeonsoo.express.product.controller;
 
 
 import com.hyeonsoo.express.product.dto.ProductDto;
-import com.hyeonsoo.express.product.entity.ProductEntity;
+import com.hyeonsoo.express.product.entity.Product;
 import com.hyeonsoo.express.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Page<ProductEntity>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int size
     ) {
@@ -26,12 +26,12 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductEntity> createProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<Product> createProduct(@RequestBody ProductDto productDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(productDto));
     }
 
     @PutMapping
-    public ResponseEntity<ProductEntity> updateProduct(@RequestBody ProductDto productDto) {
+    public ResponseEntity<Product> updateProduct(@RequestBody ProductDto productDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(productService.updateProduct(productDto));
     }
 

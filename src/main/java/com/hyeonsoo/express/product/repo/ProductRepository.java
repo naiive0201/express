@@ -1,10 +1,10 @@
 package com.hyeonsoo.express.product.repo;
 
-import com.hyeonsoo.express.product.entity.ProductEntity;
+import com.hyeonsoo.express.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    ProductEntity findByName(String name);
+    Product findByName(String name);
 }

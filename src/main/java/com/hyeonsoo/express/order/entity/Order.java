@@ -1,8 +1,8 @@
 package com.hyeonsoo.express.order.entity;
 
 
-import com.hyeonsoo.express.customer.entity.CustomerEntity;
-import com.hyeonsoo.express.product.entity.ProductEntity;
+import com.hyeonsoo.express.customer.entity.Customer;
+import com.hyeonsoo.express.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,18 +16,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 @EntityListeners(AuditingEntityListener.class)
-public class OrderEntity {
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+    private Customer customer;
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    private ProductEntity product;
+    private Product product;
 
     @CreatedDate
     private LocalDateTime createdAt;

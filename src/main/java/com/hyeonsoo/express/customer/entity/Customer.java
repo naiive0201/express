@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class CustomerEntity {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class CustomerEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public CustomerEntity(CustomerDto customerDto) {
+    public Customer(CustomerDto customerDto) {
         this.id = customerDto.getId();
         this.name = customerDto.getName();
         this.phone = customerDto.getPhone();

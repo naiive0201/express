@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-public class ProductEntity {
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class ProductEntity {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public ProductEntity(ProductDto productDto) {
+    public Product(ProductDto productDto) {
         this.id = productDto.getId();
         this.name = productDto.getName();
         this.price = productDto.getPrice();

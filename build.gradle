@@ -26,14 +26,44 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
-    // TODO: querydsl support
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    //Querydsl 추가
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated/querydsl"
+        }
+    }
 }
+
+tasks.named("compileJava") {
+    doLast {
+        // Ensure the directory exists and can be used
+        def generatedDir = file("$buildDir/generated/querydsl")
+        if (!generatedDir.exists()) {
+            generatedDir.mkdirs()
+        }
+    }
+}
+
+tasks.named("clean") {
+    doLast {
+        delete "$buildDir/generated/querydsl"
+    }
+}
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}

@@ -2,7 +2,7 @@ package com.hyeonsoo.express.order.controller;
 
 
 import com.hyeonsoo.express.order.dto.OrderDto;
-import com.hyeonsoo.express.order.entity.OrderEntity;
+import com.hyeonsoo.express.order.entity.Order;
 import com.hyeonsoo.express.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,17 +16,17 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping("{customerId}")
-    public ResponseEntity<Iterable<OrderEntity>> getOrdersByCustomerId(@PathVariable Long customerId) {
+    public ResponseEntity<Iterable<Order>> getOrdersByCustomerId(@PathVariable Long customerId) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(orderService.getOrdersByCustomerId(customerId));
     }
 
     @PostMapping
     public ResponseEntity<Long> insertOrder(@RequestBody OrderDto orderDto) {
-        OrderEntity newOrder = orderService.createOrder(orderDto);
+        Order newOrder = orderService.createOrder(orderDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newOrder.getId());
     }
-    
+
 
     @DeleteMapping
     public ResponseEntity<Void> deleteOrder(@RequestBody OrderDto orderDto) {
