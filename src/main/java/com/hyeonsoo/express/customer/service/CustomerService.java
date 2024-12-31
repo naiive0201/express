@@ -3,36 +3,14 @@ package com.hyeonsoo.express.customer.service;
 import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
-import com.hyeonsoo.express.customer.repo.CustomerQueryDslRepository;
-import com.hyeonsoo.express.util.EmptyCheckerUtil;
+import com.hyeonsoo.express.customer.repo.CustomerRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public record CustomerService(CustomerQueryDslRepository customerRepository) {
-
-    public PaginatedResponse<Customer> getPaginatedCustomersByName(String name, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Customer> customerPage = customerRepository.findCustomersWithPaginationAndNameFilter(pageable, name);
-        return new PaginatedResponse<>(
-            customerPage.getContent(),
-            customerPage.getNumber(),
-            customerPage.getTotalPages(),
-            customerPage.getTotalElements()
-        );
-    }
-
-    public Page<Customer> getCustomers(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return customerRepository.findCustomersWithPaginationAndNameFilter(pageable, null);
-    }
-
-    public Customer getByNameAndPhone(CustomerDto customerDto) {
-        return customerRepository.findByNameAndPhoneFilter(customerDto.getName(), customerDto.getPhone());
-    }
-
+public record CustomerService(CustomerRepository customerRepository) {
     public Customer createCustomer(CustomerDto customerDto) {
         Customer tobeInserted = new Customer();
         tobeInserted.setName(customerDto.getName());
@@ -40,7 +18,7 @@ public record CustomerService(CustomerQueryDslRepository customerRepository) {
         tobeInserted.setPhone(customerDto.getPhone());
         tobeInserted.setRecommendedBy(customerDto.getRecommendedBy());
 
-        return customerRepository.insertCustomerIfNotExists(tobeInserted);
+        return customerRepository.save(tobeInserted);
     }
 
 //    public Customer updateCustomer(CustomerDto customerDto) {

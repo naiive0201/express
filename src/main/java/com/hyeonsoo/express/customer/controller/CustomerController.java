@@ -3,8 +3,10 @@ package com.hyeonsoo.express.customer.controller;
 import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
+import com.hyeonsoo.express.customer.service.CustomerQueryDslService;
 import com.hyeonsoo.express.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
     private final CustomerService customerService;
 
+    private final CustomerQueryDslService customerQueryDslService;
+
     @GetMapping
     public ResponseEntity<PaginatedResponse<Customer>> getCustomers(
         @RequestParam(defaultValue = "0") int page,
@@ -22,7 +26,7 @@ public class CustomerController {
         @RequestParam(required = false) String name
     ) {
 
-        PaginatedResponse<Customer> customersByName = customerService.getPaginatedCustomersByName(name, page, size);
+        PaginatedResponse<Customer> customersByName = customerQueryDslService.findCustomersWithPaginationAndNameFilter(PageRequest.of(page, size), name);
         return ResponseEntity.ok(customersByName);
     }
 

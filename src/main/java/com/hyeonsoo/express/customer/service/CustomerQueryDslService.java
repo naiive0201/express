@@ -1,5 +1,7 @@
-package com.hyeonsoo.express.customer.repo;
+package com.hyeonsoo.express.customer.service;
 
+import com.hyeonsoo.express.common.dto.PaginatedResponse;
+import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
 import com.hyeonsoo.express.customer.entity.QCustomer;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -9,6 +11,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -16,13 +19,11 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomerQueryDslRepository {
-  @PersistenceContext
-  private final EntityManager entityManager;
+public class CustomerQueryDslService {
 
   private final JPAQueryFactory queryFactory;
 
-  public Page<Customer> findCustomersWithPaginationAndNameFilter(Pageable pageable, String nameFilter) {
+  public PaginatedResponse<Customer> findCustomersWithPaginationAndNameFilter(Pageable pageable, String nameFilter) {
     QCustomer customer = QCustomer.customer;
 
     JPAQuery<Customer> query = queryFactory.selectFrom(customer);
@@ -38,7 +39,14 @@ public class CustomerQueryDslRepository {
         .limit(pageable.getPageSize())
         .fetch();
 
-    return new PageImpl<>(customers, pageable, total);
+    Page<Customer> customerPage = new PageImpl<>(customers, pageable, total);
+
+    return new PaginatedResponse<>(
+        customerPage.getContent(),
+        customerPage.getNumber(),
+        customerPage.getTotalPages(),
+        customerPage.getTotalElements()
+    );
   }
 
   public Customer findByNameAndPhoneFilter(String nameFilter, String phoneFilter) {
@@ -50,18 +58,5 @@ public class CustomerQueryDslRepository {
         );
 
     return query.fetchFirst();
-  }
-
-  public Customer insertCustomerIfNotExists(Customer newCustomer) {
-    QCustomer customer = QCustomer.customer;
-
-    // Check if customer exists
-    boolean customerAlreadyExists = findByNameAndPhoneFilter(newCustomer.getName(), newCustomer.getPhone()) != null;
-
-    if (!customerAlreadyExists) {
-      entityManager.persist(newCustomer); // Insert if not exists
-    }
-
-    return newCustomer;
   }
 }

@@ -7,8 +7,8 @@ POST http://localhost:9090/api/v1/customers
 Content-Type: application/json
 
 {
-  "name": "김태희",
-  "phone": "01033334444",
-  "address": "서울시 강남구 압구정동",
-  "recommendedBy": "주현수"
+  "name": "엄태성",
+  "phone": "01033334445",
+  "address": "서울시 강남구 서초동",
+  "recommendedBy": "JHS"
 }
