@@ -5,8 +5,6 @@ import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
 import com.hyeonsoo.express.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
