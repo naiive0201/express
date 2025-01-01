@@ -3,7 +3,6 @@ package com.hyeonsoo.express.customer.controller;
 import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
-import com.hyeonsoo.express.customer.service.CustomerQueryDslService;
 import com.hyeonsoo.express.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class CustomerController {
     private final CustomerService customerService;
 
-    private final CustomerQueryDslService customerQueryDslService;
-
     @GetMapping
     public ResponseEntity<PaginatedResponse<Customer>> getCustomers(
         @RequestParam(defaultValue = "0") int page,
@@ -26,7 +23,7 @@ public class CustomerController {
         @RequestParam(required = false) String name
     ) {
 
-        PaginatedResponse<Customer> customersByName = customerQueryDslService.findCustomersWithPaginationAndNameFilter(PageRequest.of(page, size), name);
+        PaginatedResponse<Customer> customersByName = customerService.findCustomersWithPaginationAndNameFilter(PageRequest.of(page, size), name);
         return ResponseEntity.ok(customersByName);
     }
 
@@ -35,14 +32,36 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerService.createCustomer(customerDto));
     }
 
-//    @PutMapping("/{customerId}")
-//    public ResponseEntity<Customer> updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDto customerDto) {
-//        return ResponseEntity.status(HttpStatus.ACCEPTED).body(customerService.updateCustomer(customerDto));
-//    }
-//
-//    @DeleteMapping
-//    public ResponseEntity<?> deleteCustomer(@RequestBody CustomerDto customerDto) {
-//        customerService.deleteCustomer(customerDto);
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@RequestBody CustomerDto customerDto, @PathVariable Long id) {
+        boolean found = customerService.checkIfCustomerExists(id);
+
+        if (!found) {
+            return ResponseEntity.notFound().build();
+        }
+
+        customerDto.setId(id);
+
+        Customer updated = customerService.updateCustomer(customerDto);
+
+        if (updated == null) {
+            ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(updated);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
+        boolean found = customerService.checkIfCustomerExists(id);
+
+        if (!found) {
+            return ResponseEntity.notFound().build();
+        }
+
+        customerService.deleteCustomer(id);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }
