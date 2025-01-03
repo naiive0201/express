@@ -23,23 +23,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
+    
     private final CustomerRepository customerRepository;
     private final JPAQueryFactory queryFactory;
-    /**
-     * 고객 생성하기
-     * @param customerDto
-     * @return 생성된 고객
-     */
-    public Customer createCustomer(CustomerDto customerDto) {
-        Customer tobeInserted = new Customer();
-        tobeInserted.setName(customerDto.getName());
-        tobeInserted.setAddress(customerDto.getAddress());
-        tobeInserted.setPhone(customerDto.getPhone());
-        tobeInserted.setRecommendedBy(customerDto.getRecommendedBy());
-
-        return customerRepository.save(tobeInserted);
-    }
-
+    
     /**
      * 페이징 처리된 고객리스트 조회하기
      * @param pageable
@@ -69,6 +56,34 @@ public class CustomerService {
             customerPage.getTotalPages(),
             customerPage.getTotalElements()
         );
+    }
+
+    /**
+     * Id로 고객 찾기
+     * @param id
+     * @return
+     */
+    public Customer findCustomerById(Long id) {
+        QCustomer customer = QCustomer.customer;
+        
+        return queryFactory.selectFrom(customer)
+            .where(customer.id.eq(id))
+            .fetchOne();
+    }
+    
+    /**
+     * 고객 생성하기
+     * @param customerDto
+     * @return 생성된 고객
+     */
+    public Customer createCustomer(CustomerDto customerDto) {
+        Customer tobeInserted = new Customer();
+        tobeInserted.setName(customerDto.getName());
+        tobeInserted.setAddress(customerDto.getAddress());
+        tobeInserted.setPhone(customerDto.getPhone());
+        tobeInserted.setRecommendedBy(customerDto.getRecommendedBy());
+
+        return customerRepository.save(tobeInserted);
     }
     
     /**

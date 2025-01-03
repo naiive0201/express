@@ -22,9 +22,18 @@ public class CustomerController {
         @RequestParam(defaultValue = "5") int size,
         @RequestParam(required = false) String name
     ) {
-
         PaginatedResponse<Customer> customersByName = customerService.findCustomersWithPaginationAndNameFilter(PageRequest.of(page, size), name);
         return ResponseEntity.ok(customersByName);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        Customer customerById = customerService.findCustomerById(id);
+
+        if (customerById == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customerById);
     }
 
     @PostMapping
