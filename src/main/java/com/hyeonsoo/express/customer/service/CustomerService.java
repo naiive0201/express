@@ -6,6 +6,7 @@ import com.hyeonsoo.express.customer.entity.Customer;
 import com.hyeonsoo.express.customer.entity.QCustomer;
 import com.hyeonsoo.express.customer.repo.CustomerRepository;
 import com.hyeonsoo.express.util.EmptyCheckerUtil;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
@@ -34,19 +35,28 @@ public class CustomerService {
      * @return 페이징 처리된 고객리스트
      */
     public PaginatedResponse<Customer> findCustomersWithPaginationAndNameFilter(Pageable pageable, String nameFilter) {
-        QCustomer customer = QCustomer.customer;
-
-        JPAQuery<Customer> query = queryFactory.selectFrom(customer);
+        QCustomer qCustomer = QCustomer.customer;
+        BooleanBuilder whereClause = new BooleanBuilder();
 
         if (nameFilter != null && !nameFilter.isEmpty()) {
-            query.where(customer.name.eq(nameFilter));
+            whereClause.and(qCustomer.name.eq(nameFilter));
         }
 
-        long total = query.fetch().size();
-        List<Customer> customers = query
+
+        List<Customer> customers = queryFactory
+            .select(qCustomer)
+            .from(qCustomer)
+            .where(whereClause)
+            .orderBy(qCustomer.createdAt.desc())
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
+
+
+        long total = queryFactory.select(qCustomer.count())
+            .from(qCustomer)
+            .where(whereClause)
+            .fetchOne();
 
         Page<Customer> customerPage = new PageImpl<>(customers, pageable, total);
 
@@ -128,8 +138,8 @@ public class CustomerService {
      * 고객번호 삭제하기
      * @param id
      */
+    @Transactional
     public void deleteCustomer(Long id) {
-
         customerRepository.deleteById(id);
     }
 

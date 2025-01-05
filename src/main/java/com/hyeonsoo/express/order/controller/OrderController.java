@@ -1,6 +1,7 @@
 package com.hyeonsoo.express.order.controller;
 
 
+import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.order.dto.OrderDto;
 import com.hyeonsoo.express.order.entity.Order;
 import com.hyeonsoo.express.order.service.OrderService;
@@ -15,10 +16,15 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
-    @GetMapping("{customerId}")
-    public ResponseEntity<Iterable<Order>> getOrdersByCustomerId(@PathVariable Long customerId) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(orderService.getOrdersByCustomerId(customerId));
+    @GetMapping("/{id}")
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
+        Order orderById = orderService.getOrderById(id);
+
+        if (orderById == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(orderById);
     }
 
     @PostMapping
