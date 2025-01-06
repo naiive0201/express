@@ -1,0 +1,15 @@
+###
+GET http://localhost:9090/api/v1/orders/2
+
+###
+POST http://localhost:9090/api/v1/orders
+Content-Type: application/json
+
+{
+  "customer": {
+    "id": 1
+  },
+  "product": {
+    "id": 1
+  }
+}

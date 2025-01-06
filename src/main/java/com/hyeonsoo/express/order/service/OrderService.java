@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,10 +81,6 @@ public class OrderService {
             orderPage.getTotalElements()
         );
     }
-
-//    public Order getProductByOrderId(Long orderId) {
-//
-//    }
 
     public Order createOrder(OrderDto orderDto) {
         Order newOrder = new Order();
