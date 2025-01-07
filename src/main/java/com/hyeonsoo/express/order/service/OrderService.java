@@ -41,22 +41,55 @@ public class OrderService {
             .fetchOne();
     }
 
-    public PaginatedResponse<Order> getProductsByCustomerId(Long customerId, Long orderId, Pageable pageable) {
+    /**
+     * 고객ID, 주문ID로 조회
+     * @param customerId
+     * @param orderId
+     * @return
+     */
+    public Order getProductsByCustomerIdAndOrderId(Long customerId, Long orderId) {
+        QOrder qOrder = QOrder.order;
+        QCustomer qCustomer = QCustomer.customer;
+        QProduct qProduct = QProduct.product;
+
+        Tuple query = jpaQueryFactory.select(qOrder, qCustomer, qProduct)
+                                    .from(qOrder)
+                                    .join(qOrder.customer, qCustomer)
+                                    .join(qOrder.product, qProduct)
+                                    .where(qOrder.customer.id.eq(customerId)
+                                        .and(qOrder.id.eq(orderId))).fetchOne();
+
+        Order order = new Order();
+        order.setCustomer(query.get(qCustomer));
+        order.setProduct(query.get(qProduct));
+        order.setId(query.get(qOrder).getId());
+        order.setCreatedAt(query.get(qOrder).getCreatedAt());
+
+        return order;
+    }
+
+    /**
+     * 고객ID로 pagination 조회
+     * @param customerId
+     * @param pageable
+     * @return
+     */
+    public PaginatedResponse<Order> getProductsByCustomerId(Long customerId, Pageable pageable) {
         QOrder order = QOrder.order;
         QCustomer customer = QCustomer.customer;
         QProduct product = QProduct.product;
 
         JPAQuery<Tuple> query = jpaQueryFactory.select(order, customer, product)
-                                            .from(order)
-                                            .join(order.customer, customer)
-                                            .join(order.product, product)
-                                            .where(order.customer.id.eq(customerId));
+                                                .from(order)
+                                                .join(order.customer, customer)
+                                                .join(order.product, product)
+                                                .where(order.customer.id.eq(customerId));
 
         long total = query.fetch().size();
         List<Tuple> tuples  = query
-                                .offset(pageable.getOffset())
-                                .limit(pageable.getPageSize())
-                                .fetch();
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
         List<Order> orders = new ArrayList<>();
 
@@ -73,7 +106,6 @@ public class OrderService {
 
         Page<Order> orderPage = new PageImpl<>(orders, pageable, total);
 
-
         return new PaginatedResponse<>(
             orderPage.getContent(),
             orderPage.getNumber(),
@@ -82,6 +114,11 @@ public class OrderService {
         );
     }
 
+    /**
+     * 주문 생성
+     * @param orderDto
+     * @return
+     */
     public Order createOrder(OrderDto orderDto) {
         Order newOrder = new Order();
         newOrder.setCustomer(new Customer(orderDto.getCustomer()));
@@ -90,11 +127,11 @@ public class OrderService {
         return orderRepository.save(newOrder);
     }
 
-
-    public void deleteOrder(OrderDto orderDto) {
-        Order deletedOrder = new Order();
-        deletedOrder.setId(orderDto.getId());
-
-        orderRepository.delete(deletedOrder);
+    /**
+     * 주문 삭제
+     * @param id
+     */
+    public void deleteOrder(Long id) {
+        orderRepository.deleteById(id);
     }
 }

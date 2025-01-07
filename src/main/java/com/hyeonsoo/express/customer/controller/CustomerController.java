@@ -41,7 +41,6 @@ public class CustomerController {
 
     @GetMapping("/{customerId}/orders")
     public ResponseEntity<PaginatedResponse<Order>> getOrdersId(@PathVariable Long customerId,
-                                             @PathVariable(required = false) Long orderId,
                                             @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "5") int size) {
         Customer customerById = customerService.findCustomerById(customerId);
@@ -50,11 +49,27 @@ public class CustomerController {
             return ResponseEntity.notFound().build();
         }
 
-        PaginatedResponse<Order> orderFound = orderService.getProductsByCustomerId(customerId, orderId, PageRequest.of(page, size));
+        PaginatedResponse<Order> ordersFound = orderService.getProductsByCustomerId(customerId, PageRequest.of(page, size));
+        return ResponseEntity.ok(ordersFound);
+
+    }
+
+    @GetMapping("/{customerId}/orders/{orderId}")
+    public ResponseEntity<Order> getCustomerOrder(@PathVariable Long customerId,
+                                                  @PathVariable Long orderId) {
+        if (customerId == null || orderId == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Customer customerById = customerService.findCustomerById(customerId);
+
+        if (customerById == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Order orderFound = orderService.getProductsByCustomerIdAndOrderId(customerId, orderId);
 
         return ResponseEntity.ok(orderFound);
     }
-
 
     @PostMapping
     public ResponseEntity<Customer> createCustomer(@RequestBody CustomerDto customerDto) {

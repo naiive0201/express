@@ -13,3 +13,6 @@ Content-Type: application/json
     "id": 1
   }
 }
+
+###
+DELETE http://localhost:9090/api/v1/orders/2
