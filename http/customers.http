@@ -33,3 +33,6 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:9090/api/v1/customers/7
+
+###
+GET http://localhost:9090/api/v1/customers/1/orders

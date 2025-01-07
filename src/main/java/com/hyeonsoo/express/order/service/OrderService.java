@@ -50,8 +50,7 @@ public class OrderService {
                                             .from(order)
                                             .join(order.customer, customer)
                                             .join(order.product, product)
-                                            .where(order.customer.id.eq(customerId)
-                                                .and(order.id.eq(orderId)));
+                                            .where(order.customer.id.eq(customerId));
 
         long total = query.fetch().size();
         List<Tuple> tuples  = query
@@ -69,6 +68,7 @@ public class OrderService {
             newOrder.setProduct(curOrder.getProduct());
             newOrder.setId(curOrder.getId());
             newOrder.setCreatedAt(curOrder.getCreatedAt());
+            orders.add(newOrder);
         }
 
         Page<Order> orderPage = new PageImpl<>(orders, pageable, total);

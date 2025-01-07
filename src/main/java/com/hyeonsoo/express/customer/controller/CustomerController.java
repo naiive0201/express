@@ -4,6 +4,7 @@ import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
 import com.hyeonsoo.express.customer.service.CustomerService;
+import com.hyeonsoo.express.order.entity.Order;
 import com.hyeonsoo.express.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -39,39 +40,20 @@ public class CustomerController {
     }
 
     @GetMapping("/{customerId}/orders")
-    public ResponseEntity<Customer> getOrdersId(@PathVariable Long customerId,
-                                                @PathVariable(required = false) Long orderId,
-                                                @RequestParam int page,
-                                                @RequestParam int size) {
+    public ResponseEntity<PaginatedResponse<Order>> getOrdersId(@PathVariable Long customerId,
+                                             @PathVariable(required = false) Long orderId,
+                                            @RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "5") int size) {
         Customer customerById = customerService.findCustomerById(customerId);
 
         if (customerById == null) {
             return ResponseEntity.notFound().build();
         }
 
-        orderService.getProductsByCustomerId(customerId, orderId, PageRequest.of(page, size));
+        PaginatedResponse<Order> orderFound = orderService.getProductsByCustomerId(customerId, orderId, PageRequest.of(page, size));
 
-        return ResponseEntity.ok(customerById);
+        return ResponseEntity.ok(orderFound);
     }
-
-//
-//    @GetMapping("/{customerId}/orders/{orderId}")
-//    public ResponseEntity<Customer> getOrdersId(@PathVariable Long customerId,
-//        @PathVariable(required = false) Long orderId) {
-//        Customer customerById = customerService.findCustomerById(customerId);
-//
-//        if (customerById == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        if (orderId == null) {
-//
-//        }
-//
-//        Order orderById =
-//
-//        return ResponseEntity.ok(customerById);
-//    }
 
 
     @PostMapping
