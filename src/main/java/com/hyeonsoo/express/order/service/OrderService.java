@@ -1,17 +1,20 @@
 package com.hyeonsoo.express.order.service;
 
 import com.hyeonsoo.express.common.dto.PaginatedResponse;
+import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
 import com.hyeonsoo.express.customer.entity.QCustomer;
 import com.hyeonsoo.express.order.dto.OrderDto;
 import com.hyeonsoo.express.order.entity.Order;
 import com.hyeonsoo.express.order.entity.QOrder;
 import com.hyeonsoo.express.order.repo.OrderRepository;
+import com.hyeonsoo.express.product.dto.ProductDto;
 import com.hyeonsoo.express.product.entity.Product;
 import com.hyeonsoo.express.product.entity.QProduct;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +46,17 @@ public class OrderService {
     }
 
     /**
+     * id로 주문 존재여부 구하기
+     * @param id 주문ID
+     * @return boolean
+     */
+    public boolean checkIfCustomerExists(Long id) {
+        return getOrderById(id) != null;
+    }
+
+
+    /**
+     *
      * 고객ID, 주문ID로 조회
      * @param customerId
      * @param orderId
@@ -75,15 +90,15 @@ public class OrderService {
      * @return
      */
     public PaginatedResponse<Order> getProductsByCustomerId(Long customerId, Pageable pageable) {
-        QOrder order = QOrder.order;
-        QCustomer customer = QCustomer.customer;
-        QProduct product = QProduct.product;
+        QOrder qOrder = QOrder.order;
+        QCustomer qCustomer = QCustomer.customer;
+        QProduct qProduct = QProduct.product;
 
-        JPAQuery<Tuple> query = jpaQueryFactory.select(order, customer, product)
-                                                .from(order)
-                                                .join(order.customer, customer)
-                                                .join(order.product, product)
-                                                .where(order.customer.id.eq(customerId));
+        JPAQuery<Tuple> query = jpaQueryFactory.select(qOrder, qCustomer, qProduct)
+                                                .from(qOrder)
+                                                .join(qOrder.customer, qCustomer)
+                                                .join(qOrder.product, qProduct)
+                                                .where(qOrder.customer.id.eq(customerId));
 
         long total = query.fetch().size();
         List<Tuple> tuples  = query
@@ -95,7 +110,7 @@ public class OrderService {
 
         Order newOrder = null;
         for (Tuple cur : tuples) {
-            Order curOrder = cur.get(order);
+            Order curOrder = cur.get(qOrder);
             newOrder = new Order();
             newOrder.setCustomer(curOrder.getCustomer());
             newOrder.setProduct(curOrder.getProduct());
@@ -128,8 +143,36 @@ public class OrderService {
     }
 
     /**
+     * 주문 업데이트
+     * @param orderDto
+     * @return
+     */
+    public Order updateOrder(OrderDto orderDto) {
+        QOrder qOrder = QOrder.order;
+        QCustomer qCustomer = QCustomer.customer;
+        QProduct qProduct = QProduct.product;
+
+        JPAUpdateClause jpaUpdateClause = jpaQueryFactory.update(qOrder);
+
+
+        CustomerDto updatedCustomer = orderDto.getCustomer();
+        if (updatedCustomer != null) {
+            updatedCustomer.setUpdatedAt(LocalDateTime.now());
+            Customer newCustomer = new Customer(updatedCustomer);
+            jpaUpdateClause.set(qOrder.customer, newCustomer);
+        }
+
+        ProductDto updatedProduct = orderDto.getProduct();
+        if (updatedProduct != null) {
+            ProductDto productDto = orderDto.getProduct();
+        }
+
+        return null;
+    }
+
+    /**
      * 주문 삭제
-     * @param id
+     * @param id 주문ID
      */
     public void deleteOrder(Long id) {
         orderRepository.deleteById(id);

@@ -5,15 +5,12 @@ import com.hyeonsoo.express.customer.dto.CustomerDto;
 import com.hyeonsoo.express.customer.entity.Customer;
 import com.hyeonsoo.express.customer.entity.QCustomer;
 import com.hyeonsoo.express.customer.repo.CustomerRepository;
-import com.hyeonsoo.express.util.EmptyCheckerUtil;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +23,7 @@ import java.util.List;
 public class CustomerService {
     
     private final CustomerRepository customerRepository;
-    private final JPAQueryFactory queryFactory;
+    private final JPAQueryFactory jpaQueryFactory;
     
     /**
      * 페이징 처리된 고객리스트 조회하기
@@ -43,7 +40,7 @@ public class CustomerService {
         }
 
 
-        List<Customer> customers = queryFactory
+        List<Customer> customers = jpaQueryFactory
             .select(qCustomer)
             .from(qCustomer)
             .where(whereClause)
@@ -53,7 +50,7 @@ public class CustomerService {
             .fetch();
 
 
-        long total = queryFactory.select(qCustomer.count())
+        long total = jpaQueryFactory.select(qCustomer.count())
             .from(qCustomer)
             .where(whereClause)
             .fetchOne();
@@ -74,10 +71,10 @@ public class CustomerService {
      * @return
      */
     public Customer findCustomerById(Long id) {
-        QCustomer customer = QCustomer.customer;
+        QCustomer qCustomer = QCustomer.customer;
         
-        return queryFactory.selectFrom(customer)
-            .where(customer.id.eq(id))
+        return jpaQueryFactory.selectFrom(qCustomer)
+            .where(qCustomer.id.eq(id))
             .fetchOne();
     }
     
@@ -103,28 +100,28 @@ public class CustomerService {
      */
     @Transactional
     public Customer updateCustomer(CustomerDto customerDto) {
-        QCustomer customer = QCustomer.customer;
+        QCustomer qCustomer = QCustomer.customer;
 
-        JPAUpdateClause jpaUpdateClause = queryFactory.update(customer);
+        JPAUpdateClause jpaUpdateClause = jpaQueryFactory.update(qCustomer);
 
         if (customerDto.getName() != null && !customerDto.getName().isEmpty()) {
-            jpaUpdateClause.set(customer.name, customerDto.getName());
+            jpaUpdateClause.set(qCustomer.name, customerDto.getName());
         }
 
         if (customerDto.getAddress() != null && !customerDto.getAddress().isEmpty()) {
-            jpaUpdateClause.set(customer.address, customerDto.getAddress());
+            jpaUpdateClause.set(qCustomer.address, customerDto.getAddress());
         }
 
         if (customerDto.getPhone() != null && !customerDto.getPhone().isEmpty()) {
-            jpaUpdateClause.set(customer.phone, customerDto.getPhone());
+            jpaUpdateClause.set(qCustomer.phone, customerDto.getPhone());
         }
 
         if (customerDto.getRecommendedBy() != null && !customerDto.getRecommendedBy().isEmpty()) {
-            jpaUpdateClause.set(customer.recommendedBy, customerDto.getRecommendedBy());
+            jpaUpdateClause.set(qCustomer.recommendedBy, customerDto.getRecommendedBy());
         }
 
-        long updatedRow = jpaUpdateClause.set(customer.updatedAt, LocalDateTime.now())
-                                       .where(customer.id.eq(customerDto.getId()))
+        long updatedRow = jpaUpdateClause.set(qCustomer.updatedAt, LocalDateTime.now())
+                                       .where(qCustomer.id.eq(customerDto.getId()))
                                        .execute();
 
         if (updatedRow == 0) {
@@ -160,10 +157,10 @@ public class CustomerService {
      * @return id로 찾은 고객
      */
     private Customer findById(Long id) {
-        QCustomer customer = QCustomer.customer;
+        QCustomer qCustomer = QCustomer.customer;
 
-        return queryFactory
-            .selectFrom(customer)
-            .where(customer.id.eq(id)).fetchOne();
+        return jpaQueryFactory
+            .selectFrom(qCustomer)
+            .where(qCustomer.id.eq(id)).fetchOne();
     }
 }

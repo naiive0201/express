@@ -1,7 +1,6 @@
 package com.hyeonsoo.express.order.controller;
 
 
-import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.order.dto.OrderDto;
 import com.hyeonsoo.express.order.entity.Order;
 import com.hyeonsoo.express.order.service.OrderService;
@@ -31,6 +30,19 @@ public class OrderController {
     public ResponseEntity<Long> insertOrder(@RequestBody OrderDto orderDto) {
         Order newOrder = orderService.createOrder(orderDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newOrder.getId());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrder(@RequestBody OrderDto orderDto, @PathVariable Long id) {
+        boolean orderFound = orderService.checkIfCustomerExists(id);
+
+        if (!orderFound) {
+            return ResponseEntity.notFound().build();
+        }
+
+        orderDto.setId(id);
+
+        return null;
     }
 
     @DeleteMapping("/{id}")
