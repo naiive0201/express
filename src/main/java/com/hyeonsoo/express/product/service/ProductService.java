@@ -1,20 +1,61 @@
 package com.hyeonsoo.express.product.service;
 
+import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.product.dto.ProductDto;
 import com.hyeonsoo.express.product.entity.Product;
+import com.hyeonsoo.express.product.entity.QProduct;
 import com.hyeonsoo.express.product.repo.ProductRepository;
 import com.hyeonsoo.express.util.EmptyCheckerUtil;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 @Service
-public record ProductService(ProductRepository productRepository) {
-    public Page<Product> getProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return productRepository.findAll(pageable);
+@RequiredArgsConstructor
+public class ProductService {
+
+    private final ProductRepository productRepository;
+    private final JPAQueryFactory jpaQueryFactory;
+
+    public PaginatedResponse<Product> findProductsWithPaginationAndNameFilter(Pageable pageable, String nameFilter) {
+        QProduct qProduct = QProduct.product;
+        BooleanBuilder whereClause = new BooleanBuilder();
+
+        if (nameFilter != null && !nameFilter.isEmpty()) {
+            whereClause.and(qProduct.name.eq(nameFilter));
+
+        }
+
+        List<Product> products = jpaQueryFactory
+            .select(qProduct)
+            .from(qProduct)
+            .where(whereClause)
+            .orderBy(qProduct.createdAt.desc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+        long total = jpaQueryFactory.select(qProduct.count())
+            .from(qProduct)
+            .where(whereClause)
+            .fetchOne();
+
+        Page<Product> productPage = new PageImpl<>(products, pageable, total);
+
+        return new PaginatedResponse<>(
+            productPage.getContent(),
+            productPage.getNumber(),
+            productPage.getTotalPages(),
+            productPage.getTotalElements()
+        );
     }
 
     public Product getByName(String name) {

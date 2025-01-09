@@ -1,11 +1,13 @@
 package com.hyeonsoo.express.product.controller;
 
 
+import com.hyeonsoo.express.common.dto.PaginatedResponse;
 import com.hyeonsoo.express.product.dto.ProductDto;
 import com.hyeonsoo.express.product.entity.Product;
 import com.hyeonsoo.express.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +20,12 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Page<Product>> getProducts(
+    public ResponseEntity<PaginatedResponse<Product>> getProducts(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "5") int size
+        @RequestParam(defaultValue = "5") int size,
+        @RequestParam String name
     ) {
-        return ResponseEntity.ok(productService.getProducts(page, size));
+        return ResponseEntity.ok(productService.findProductsWithPaginationAndNameFilter(PageRequest.of(page, size), name));
     }
 
     @PostMapping
