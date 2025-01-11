@@ -137,7 +137,7 @@ public class CustomerService {
      */
     @Transactional
     public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
+        customerRepository.deleteById(id) ;
     }
 
     /**

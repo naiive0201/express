@@ -89,7 +89,7 @@ public class CustomerController {
         Customer updated = customerService.updateCustomer(customerDto);
 
         if (updated == null) {
-            ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updated);

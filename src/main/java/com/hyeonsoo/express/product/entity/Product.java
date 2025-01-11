@@ -4,6 +4,7 @@ import com.hyeonsoo.express.product.dto.ProductDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -25,12 +26,13 @@ public class Product {
     private String description;
     @CreatedDate
     private LocalDateTime createdAt;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     public Product(ProductDto productDto) {
         this.id = productDto.getId();
         this.name = productDto.getName();
         this.price = productDto.getPrice();
         this.description = productDto.getDescription();
-        this.createdAt = productDto.getCreatedAt();
     }
 }

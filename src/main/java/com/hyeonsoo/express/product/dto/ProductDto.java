@@ -12,5 +12,5 @@ public class ProductDto {
     private int price;
     private String description;
     private LocalDateTime createdAt;
-
+    private LocalDateTime updatedAt;
 }
