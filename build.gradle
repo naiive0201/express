@@ -70,6 +70,6 @@ tasks.named("clean") {
         delete "$buildDir/generated/querydsl"
     }
 }
-//tasks.named('test') {
-//    useJUnitPlatform()
-//}
+tasks.named('test') {
+    useJUnitPlatform()
+}
