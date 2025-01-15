@@ -53,15 +53,15 @@ class CustomerServiceTest {
   }
 
   @Test
+  void checkIfCustomerExists() {
+    boolean exists = customerService.checkIfCustomerExists(2L);
+    assertTrue(exists, "customer exists");
+  }
+
+  @Test
   void deleteCustomer() {
     customerService.deleteCustomer(1L);
     Customer res = customerService.findCustomerById(1L);
     assertTrue(res == null, "deleted customer");
-  }
-
-  @Test
-  void checkIfCustomerExists() {
-    boolean exists = customerService.checkIfCustomerExists(2L);
-    assertTrue(exists, "customer exists");
   }
 }
